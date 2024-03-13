@@ -14,16 +14,16 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode(exclude = {"createdAt"})
 @AllArgsConstructor
-public class DomainEvent {
+public class RootEvent {
     Date createdAt;
     private String eventType;
     private UUID aggregateUUID;
 
-    DomainEvent() {
+    RootEvent() {
         this.eventType = classNameToUpperCase();
     }
 
-    DomainEvent(UUID aggregateUUID, Date createdAt) {
+    RootEvent(UUID aggregateUUID, Date createdAt) {
         this.aggregateUUID = aggregateUUID;
         this.createdAt = createdAt;
         this.eventType = classNameToUpperCase();

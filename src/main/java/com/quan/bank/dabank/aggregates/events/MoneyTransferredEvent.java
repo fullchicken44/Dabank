@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class MoneyTransferredEvent extends DomainEvent {
+public class MoneyTransferredEvent extends RootEvent {
     private UUID transactionUUID;
     private UUID fromUUID;
     private UUID toUUID;

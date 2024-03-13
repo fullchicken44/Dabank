@@ -12,7 +12,7 @@ import java.util.UUID;
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class AccountCreatedEvent extends DomainEvent {
+public class AccountCreatedEvent extends RootEvent {
     private String name;
 
     public AccountCreatedEvent(UUID aggregateUUID, String name) {

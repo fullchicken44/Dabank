@@ -1,10 +1,19 @@
 package com.quan.bank.dabank.aggregates.events;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.UUID;
 
-public class MoneyTransferredSucceeded extends DomainEvent{
+@ToString
+@Getter
+@EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
+public class MoneyTransferredSucceeded extends RootEvent {
     private UUID transactionUUID;
     private UUID fromUUID;
     private UUID toUUID;
