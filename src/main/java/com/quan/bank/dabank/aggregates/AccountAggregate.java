@@ -2,6 +2,7 @@ package com.quan.bank.dabank.aggregates;
 
 import com.quan.bank.dabank.aggregates.events.*;
 import io.vavr.API;
+import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;

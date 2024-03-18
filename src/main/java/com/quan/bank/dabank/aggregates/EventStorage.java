@@ -3,6 +3,7 @@ package com.quan.bank.dabank.aggregates;
 import com.google.common.collect.ImmutableList;
 import com.quan.bank.dabank.aggregates.AccountAggregate;
 import com.quan.bank.dabank.aggregates.events.RootEvent;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static io.vavr.collection.List.ofAll;
 
+@Service
 public class EventStorage {
     private final Map<UUID, List<RootEvent>> events = new ConcurrentHashMap<>();
 
