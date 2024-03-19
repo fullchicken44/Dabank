@@ -4,12 +4,16 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.quan.bank.dabank.aggregates.events.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class EventManager {
     private final EventBus eventBus;
     private final EventStorage eventStorage;
 
+    @Autowired
     public EventManager(EventBus eventBus, EventStorage eventStorage) {
         this.eventBus = eventBus;
         this.eventStorage = eventStorage;

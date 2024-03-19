@@ -1,19 +1,23 @@
 package com.quan.bank.dabank.controllers.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.http.HttpMethod;
 
 import java.util.List;
 import java.util.UUID;
 
 @Getter
+@Setter
 @Builder
 public class URLPath {
     private static final ImmutableList<URLPath> URL_PATHS_ACCOUNTS = ImmutableList.of();
     private String rel;
     private String href;
+    @JsonIgnore
     private HttpMethod httpMethod;
 
     public static List<URLPath> getPathForAccount() {

@@ -5,16 +5,15 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.gson.Gson;
 import com.quan.bank.dabank.aggregates.AccountService;
 import com.quan.bank.dabank.aggregates.EventStorage;
-import com.quan.bank.dabank.controllers.dto.APIResponse;
-import com.quan.bank.dabank.controllers.dto.AccountResponse;
-import com.quan.bank.dabank.controllers.dto.CreateAccountRequest;
-import com.quan.bank.dabank.controllers.dto.URLPath;
+import com.quan.bank.dabank.controllers.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,7 +23,7 @@ import static com.quan.bank.dabank.controllers.dto.URLPath.getPathForAccount;
 @RestController
 @RequestMapping("/api/account")
 public class AccountController {
-    private static final String VALIDATION_ERROR = "Validation errors";
+    private static final String VALIDATION_ERROR = "Validation errors :>";
     private static final Gson GSON = new Gson();
     private final AccountService accountService;
     private final EventStorage eventStorage;
@@ -70,7 +69,7 @@ public class AccountController {
         return ResponseEntity.ok(new APIResponse(eventStorage.findAll().stream().map(AccountResponse::from).collect(toImmutableList()), getPathForAccount()));
     }
 
-    @GetMapping("/getAccount/{uuid}")
+    @GetMapping("/{uuid}")
     public ResponseEntity<APIResponse> getAccount(@PathVariable("uuid") String uuid) {
         ListMultimap<String, String> validationErrors = validationErrorsMap();
         validateUUID("uuid", uuid, validationErrors);
@@ -85,7 +84,7 @@ public class AccountController {
         }
     }
 
-    @GetMapping("/createAccount")
+    @PostMapping("/createAccount")
     public ResponseEntity<APIResponse> createAccount(@RequestBody Object request) {
         CreateAccountRequest payload = GSON.fromJson(request.toString(), CreateAccountRequest.class);
         ListMultimap<String, String> validationErrors = validationErrorsMap();
@@ -99,5 +98,57 @@ public class AccountController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @PostMapping("/{uuid}/changeName")
+    public ResponseEntity<APIResponse> changeFullName(@PathVariable UUID uuid, @RequestBody Object request) {
+        ListMultimap<String, String> validationErrors = validationErrorsMap();
+        ChangeNameRequest payload = GSON.fromJson(new Gson().toJson(request), ChangeNameRequest.class);
+        System.out.println("get here ?");
+        validateString("fullName", payload.getFullName(), validationErrors);
+        validateUUID("uuid", uuid.toString(), validationErrors);
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.badRequest().body(new APIResponse(APIResponse.Status.ERROR, VALIDATION_ERROR, validationErrors.asMap()));
+        }
+        UUID aggregateUUID = UUID.fromString(uuid.toString());
+        if (eventStorage.exists(aggregateUUID)) {
+            accountService.changeNameCommand(aggregateUUID, payload.getFullName());
+            return ResponseEntity.ok(new APIResponse(APIResponse.Status.OK, "Name changed", aggregateUUID, URLPath.getPathForAccount(aggregateUUID)));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR, "Account not found"));
+        }
+    }
+
+    @PostMapping("/transfer")
+    public ResponseEntity<APIResponse> transferMoney(@RequestBody Object request) {
+        TransferRequest payload = GSON.fromJson(request.toString(), TransferRequest.class);
+        ListMultimap<String, String> validationErrors = validationErrorsMap();
+        String fromUUID = payload.getFromUUID();
+        String toUUID = payload.getToUUID();
+        validateUUID("fromUUID", fromUUID, validationErrors);
+        validateUUID("toUUID", toUUID, validationErrors);
+
+        // Validate transfer to same account, transfer amount <= 0
+        if (fromUUID != null && toUUID != null && fromUUID.equals(toUUID)) {
+            validationErrors.put(
+                    "toAccountNumber", "Invalid transfer request, cannot transfer to the same account"
+            );
+        }
+        if (payload.getTransferValue() == null || payload.getTransferValue().compareTo(BigDecimal.ZERO) <= 0) {
+            validationErrors.put("value", "Transfer amount must be greater than 0");
+        }
+        if (!validationErrors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new APIResponse(APIResponse.Status.ERROR, VALIDATION_ERROR, validationErrors.asMap()));
+        }
+
+        // Check if those ids exist
+        if (!eventStorage.exists(UUID.fromString(toUUID))) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR,"Account with id: " + toUUID + " not exist"));
+        }
+        if (!eventStorage.exists(UUID.fromString(fromUUID))) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR,"Account with id: " + fromUUID + " not exist"));
+        }
+
+        accountService.moneyTransferCommand(UUID.fromString(fromUUID), UUID.fromString(toUUID), payload.getTransferValue());
+        return ResponseEntity.ok(new APIResponse(("Money transferred"), getPathForAccount()));
+    }
 
 }

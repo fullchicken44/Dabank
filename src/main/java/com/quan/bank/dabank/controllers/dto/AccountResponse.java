@@ -2,9 +2,7 @@ package com.quan.bank.dabank.controllers.dto;
 
 import com.quan.bank.dabank.aggregates.AccountAggregate;
 import com.quan.bank.dabank.aggregates.events.RootEvent;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -15,6 +13,8 @@ import static com.quan.bank.dabank.controllers.dto.URLPath.getPathForAccount;
 @Builder(toBuilder = true)
 @EqualsAndHashCode
 @ToString
+@Getter
+@Setter
 public class AccountResponse {
     private String fullName;
     private UUID accountNumber;
