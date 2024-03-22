@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class IndexController {
 
-    @GetMapping
+    @GetMapping("/api/health")
     public ResponseEntity<APIResponse> healthCheck() {
         return ResponseEntity.ok(new APIResponse("System's fine"));
     }

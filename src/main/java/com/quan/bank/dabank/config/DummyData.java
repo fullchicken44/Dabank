@@ -25,8 +25,8 @@ public class DummyData implements CommandLineRunner {
         final var accountId1 = accountService.createAccountCommand("Nguyen Van A");
         final var accountId2 = accountService.createAccountCommand("John Smith");
         final var accountId3 = accountService.createAccountCommand("Kim Jong Un");
-//        accountService.moneyTransferCommand(accountId1, accountId2, BigDecimal.TEN);
-//        accountService.moneyTransferCommand(accountId1, accountId2, BigDecimal.valueOf(100_000));
-//        accountService.changeNameCommand(accountId3, "Jan Kowalski");
+        accountService.moneyTransferCommand(accountId1, accountId2, BigDecimal.TEN);
+        accountService.moneyTransferCommand(accountId1, accountId2, BigDecimal.valueOf(100));
+        accountService.changeNameCommand(accountId3, "Dum Dum");
     }
 }

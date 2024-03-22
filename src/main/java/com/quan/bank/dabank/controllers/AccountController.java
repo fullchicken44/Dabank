@@ -86,23 +86,26 @@ public class AccountController {
 
     @PostMapping("/createAccount")
     public ResponseEntity<APIResponse> createAccount(@RequestBody Object request) {
-        CreateAccountRequest payload = GSON.fromJson(request.toString(), CreateAccountRequest.class);
-        ListMultimap<String, String> validationErrors = validationErrorsMap();
-        validateString("fullName", payload.getFullName(), validationErrors);
-        if (!validationErrors.isEmpty()) {
-            return ResponseEntity.badRequest().body(new APIResponse(APIResponse.Status.ERROR, VALIDATION_ERROR, validationErrors.asMap()));
-        }
+        try {
+            CreateAccountRequest payload = GSON.fromJson(request.toString(), CreateAccountRequest.class);
+            ListMultimap<String, String> validationErrors = validationErrorsMap();
+            validateString("fullName", payload.getFullName(), validationErrors);
+            if (!validationErrors.isEmpty()) {
+                return ResponseEntity.badRequest().body(new APIResponse(APIResponse.Status.ERROR, VALIDATION_ERROR, validationErrors.asMap()));
+            }
 
-        UUID aggregateUUID = accountService.createAccountCommand(payload.getFullName());
-        APIResponse apiResponse = new APIResponse(APIResponse.Status.OK, "Account created", aggregateUUID, URLPath.getPathForAccount(aggregateUUID));
-        return ResponseEntity.ok(apiResponse);
+            UUID aggregateUUID = accountService.createAccountCommand(payload.getFullName());
+            APIResponse apiResponse = new APIResponse(APIResponse.Status.OK, "Account created", aggregateUUID, URLPath.getPathForAccount(aggregateUUID));
+            return ResponseEntity.ok(apiResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new APIResponse(APIResponse.Status.ERROR, "Invalid request. Full name cannot be empty."));
+        }
     }
 
     @PostMapping("/{uuid}/changeName")
     public ResponseEntity<APIResponse> changeFullName(@PathVariable UUID uuid, @RequestBody Object request) {
         ListMultimap<String, String> validationErrors = validationErrorsMap();
         ChangeNameRequest payload = GSON.fromJson(new Gson().toJson(request), ChangeNameRequest.class);
-        System.out.println("get here ?");
         validateString("fullName", payload.getFullName(), validationErrors);
         validateUUID("uuid", uuid.toString(), validationErrors);
         if (!validationErrors.isEmpty()) {
@@ -141,10 +144,10 @@ public class AccountController {
 
         // Check if those ids exist
         if (!eventStorage.exists(UUID.fromString(toUUID))) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR,"Account with id: " + toUUID + " not exist"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR, "Account with id: " + toUUID + " not exist"));
         }
         if (!eventStorage.exists(UUID.fromString(fromUUID))) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR,"Account with id: " + fromUUID + " not exist"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new APIResponse(APIResponse.Status.ERROR, "Account with id: " + fromUUID + " not exist"));
         }
 
         accountService.moneyTransferCommand(UUID.fromString(fromUUID), UUID.fromString(toUUID), payload.getTransferValue());
