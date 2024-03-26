@@ -10,7 +10,7 @@ Not yet added database or any other external dependencies so everything is store
 |----------------------------------------------|--------|----------------------------------------------------------------|
 | [List Accounts](doc/listAccount.md)          | `GET`  | http://localhost:8080/api/account/listAccounts                 |
 | [Get Account](doc/getAccount.md)             | `GET`  | http://localhost:8080/api/account/{accountUUID}                |
-| [Change Full Name](doc/changeAccountName.md) | `POST` | http://localhost:8080/api/account/{accountUUID}/changeFullName |
+| [Change Full Name](doc/changeAccountName.md) | `PUT`  | http://localhost:8080/api/account/{accountUUID}/changeFullName |
 | [Create Account](doc/createAccount.md)       | `POST` | http://localhost:8080/api/account/createAccount                |
 | [Transfer Money](doc/transferMoney.md)       | `POST` | http://localhost:8080/api/account/transfer                     |
 
