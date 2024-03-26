@@ -21,7 +21,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.quan.bank.dabank.controllers.dto.URLPath.getPathForAccount;
 
 @RestController
-@RequestMapping("/api/account")
+@RequestMapping("/api/accounts")
 public class AccountController {
     private static final String VALIDATION_ERROR = "Validation errors :>";
     private static final Gson GSON = new Gson();
@@ -84,7 +84,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/createAccount")
+    @PostMapping("/createAccounts")
     public ResponseEntity<APIResponse> createAccount(@RequestBody Object request) {
         try {
             CreateAccountRequest payload = GSON.fromJson(request.toString(), CreateAccountRequest.class);
@@ -102,7 +102,7 @@ public class AccountController {
         }
     }
 
-    @PostMapping("/{uuid}/changeName")
+    @PutMapping("/{uuid}/changeName")
     public ResponseEntity<APIResponse> changeFullName(@PathVariable UUID uuid, @RequestBody Object request) {
         ListMultimap<String, String> validationErrors = validationErrorsMap();
         ChangeNameRequest payload = GSON.fromJson(new Gson().toJson(request), ChangeNameRequest.class);

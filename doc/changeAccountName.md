@@ -1,6 +1,6 @@
 **URL**: http://localhost:8080/api/account/{AccountUUID}/changeName
 
-**Method**: `POST`
+**Method**: `PUT`
 
 **Required Body**:
 ```json
